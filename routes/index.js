@@ -4,18 +4,41 @@ var AWS = require("aws-sdk");
 var Promise = require("bluebird");
 var aws = require("../aws/aws");
 var uuid = require("node-uuid");
+var moment = require("moment");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
 
 
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Virtual Company Builder', time: moment.utc().format("hh:mm A") });
 
 });
 
+router.get('/officestatus', function(req, res, next) {
+  aws.autoscaling.describeAutoScalingInstancesAsync({})
+    .then(function (data) {
+      console.log(JSON.stringify(data, null, 2));
+      res.send(JSON.stringify(data));
+    })
+});
 
-router.get('/test', function(req, res, next) {
+router.post('/officeinit', function(req, res, next) {
+
+  if ( !req.body.numberOfEmp
+    || !req.body.startTime
+    || !req.body.endTime
+    || !req.body.bucketName) {
+    console.log ("Bad request, number of employees, start time, end time, and bucket name must be sent!");
+    res.sendStatus(400);
+  }
+
+  var startTimeHour = req.body.startTime.split(":")[0];
+  var starttimeMin = req.body.startTime.split(":")[1];
+  var endTimeHour = req.body.endTime.split(":")[0];
+  var endtimeMin = req.body.endTime.split(":")[1];
+  var numberOfEmp = req.body.numberOfEmp;
+
   // generate a random uuid to be used in the aws name to make them unique
   var objectNameSuffix = uuid.v4().substring(0, 8);
   var launchConfigurationName = "waleed-lc-" + objectNameSuffix;
@@ -64,8 +87,8 @@ router.get('/test', function(req, res, next) {
       var params = {
         AutoScalingGroupName: autoscalingGroupName, /* required */
         ScheduledActionName: 'Startup instances', /* required */
-        DesiredCapacity: 3, /* no. of new instances */
-        Recurrence: '13 16 * * *'
+        DesiredCapacity: numberOfEmp, /* no. of new instances */
+        Recurrence: starttimeMin + ' ' + startTimeHour + ' * * *'
       };
       return aws.autoscaling.putScheduledUpdateGroupActionAsync(params);
     })
@@ -75,7 +98,7 @@ router.get('/test', function(req, res, next) {
         AutoScalingGroupName: autoscalingGroupName, /* required */
         ScheduledActionName: 'Stop instances', /* required */
         DesiredCapacity: 0,
-        Recurrence: '17 16 * * *'
+        Recurrence: endtimeMin + ' ' + endTimeHour + ' * * *'
       };
       return aws.autoscaling.putScheduledUpdateGroupActionAsync(params);
     })
@@ -88,7 +111,7 @@ router.get('/test', function(req, res, next) {
       console.log(err, err.stack);
     });
 
-  res.render('index', { title: 'Express' });
+  res.sendStatus(200);
 });
 
 module.exports = router;

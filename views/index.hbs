@@ -1,4 +1,36 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<div class="container">
+    <h1>Welcome to the {{title}}</h1>
+
+    <p id="requiredError" class="alert alert-danger" role="alert">All fields are required</p>
+    <div id="initOfficeSuccess" class="alert alert-success" role="alert">
+        Employee instances have been scheduled!
+    </div>
+    <form id="officeinitForm">
+        <div class="form-group">
+            <label for="noOfEmp">Number of Employees</label>
+            <input type="number" class="form-control" id="noOfEmp" placeholder="Number of Employees">
+        </div>
+        <div class="form-group form-inline">
+            <label for="startTime">Start of workday</label><br>
+            <input type="time" class="form-control" id="startTime" placeholder="Start of workday">
+            Note: UTC based time, current UTC time is {{time}}
+        </div>
+        <div class="form-group form-inline">
+            <label for="endTime">End of workday</label><br>
+            <input type="time" class="form-control" id="endTime" placeholder="End of workday">
+            Note: UTC based time, current UTC time is {{time}}
+        </div>
+
+        <div class="form-group">
+            <label for="bucketName">Bucket Name</label>
+            <input type="text" class="form-control" id="bucketName" placeholder="Bucket Name">
+        </div>
+        <div class="form-group">
+            <label for="secretText">Secret text</label>
+            <input type="text" class="form-control" id="secretText" placeholder="Secret text">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+</div>
 
 
