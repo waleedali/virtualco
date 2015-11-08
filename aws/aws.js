@@ -13,7 +13,11 @@ Promise.promisifyAll(Object.getPrototypeOf(ec2));
 var autoscaling = new AWS.AutoScaling(config);
 Promise.promisifyAll(Object.getPrototypeOf(autoscaling));
 
+var s3 = new AWS.S3();
+Promise.promisifyAll(Object.getPrototypeOf(s3));
+
 module.exports = {
   autoscaling: autoscaling,
-  ec2: ec2
+  ec2: ec2,
+  s3: s3
 };
