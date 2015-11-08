@@ -57,7 +57,7 @@ router.get('/officestatus', function(req, res, next) {
     })
     .catch(function(err) {
       console.log(err, err.stack);
-    });;
+    });
 
 });
 
@@ -179,7 +179,17 @@ router.post('/startinstance', function(req, res, next) {
     res.sendStatus(400);
   }
 
-  res.sendStatus(200);
+  var params = {
+    InstanceIds: [req.body.instanceId]
+  };
+  aws.ec2.startInstancesAsync(params)
+    .then(function (data) {
+      res.send(JSON.stringify(data));
+    })
+    .catch(function(err) {
+      console.log(err, err.stack);
+      res.sendStatus(400);
+    });
 });
 
 router.post('/stopinstance', function(req, res, next) {
@@ -189,27 +199,57 @@ router.post('/stopinstance', function(req, res, next) {
     res.sendStatus(400);
   }
 
-  res.sendStatus(200);
+  var params = {
+    InstanceIds: [req.body.instanceId]
+  };
+  aws.ec2.stopInstancesAsync(params)
+    .then(function (data) {
+      res.send(JSON.stringify(data));
+    })
+    .catch(function(err) {
+      console.log(err, err.stack);
+      res.sendStatus(400);
+    });
 });
 
 router.post('/startallinstances', function(req, res, next) {
 
-  if (!req.body.instanceId) {
-    console.log("Bad request, no instanceId was provided");
+  if (!req.body.instanceIds) {
+    console.log("Bad request, no instanceIds were provided");
     res.sendStatus(400);
   }
 
-  res.sendStatus(200);
+  var params = {
+    InstanceIds: req.body.instanceIds
+  };
+  aws.ec2.startInstancesAsync(params)
+    .then(function (data) {
+      res.send(JSON.stringify(data));
+    })
+    .catch(function(err) {
+      console.log(err, err.stack);
+      res.sendStatus(400);
+    });
 });
 
 router.post('/stopallinstances', function(req, res, next) {
 
-  if (!req.body.instanceId) {
-    console.log("Bad request, no instanceId was provided");
+  if (!req.body.instanceIds) {
+    console.log("Bad request, no instanceIds were provided");
     res.sendStatus(400);
   }
 
-  res.sendStatus(200);
+  var params = {
+    InstanceIds: req.body.instanceIds
+  };
+  aws.ec2.stopInstancesAsync(params)
+    .then(function (data) {
+      res.send(JSON.stringify(data));
+    })
+    .catch(function(err) {
+      console.log(err, err.stack);
+      res.sendStatus(400);
+    });
 });
 
 router.get('/showsecret', function(req, res, next) {
