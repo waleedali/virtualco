@@ -1,6 +1,7 @@
 
 $("#requiredError").hide();
 $("#initOfficeSuccess").hide();
+$("#officeStatusInfo").hide();
 
 $("#officeinitForm").submit(function( event ) {
 
@@ -50,4 +51,43 @@ $("#officeinitForm").submit(function( event ) {
 
   officeinit();
 });
+
+var loadOfficeStatus = function() {
+  $.ajax({
+    url: "/officestatus",
+    dataType: 'json',
+    cache: false,
+    success: function(data) {
+      if(data.AutoScalingInstances.length > 0) {
+        $("#officeStatusInfo").hide();
+        $("#instancesTable").find("tr:gt(0)").remove();
+
+        for (var i=0; i < data.AutoScalingInstances.length; i++) {
+          var newRow = $("<tr class='warning'>");
+          var cols = "";
+          cols += '<td>' + data.AutoScalingInstances[i].InstanceId +'</td>';
+          if (data.AutoScalingInstances[i].LifecycleState === "InService") {
+            cols += '<td>Running</td>';
+            newRow = $("<tr class='success'>");
+          } else {
+            cols += '<td>' + data.AutoScalingInstances[i].LifecycleState +'</td>';
+          }
+          cols += '<td>' + data.AutoScalingInstances[i].HealthStatus +'</td>';
+          newRow.append(cols);
+          $("#instancesTable").append(newRow);
+        }
+      } else {
+        $("#officeStatusInfo").show();
+      }
+    }.bind(this),
+    error: function(xhr, status, err) {
+      console.error("/officestatus", status, err.toString());
+    }.bind(this)
+  });
+};
+
+loadOfficeStatus();
+setInterval(loadOfficeStatus, 10000);
+
+
 

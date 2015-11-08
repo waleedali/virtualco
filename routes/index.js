@@ -18,7 +18,6 @@ router.get('/', function(req, res, next) {
 router.get('/officestatus', function(req, res, next) {
   aws.autoscaling.describeAutoScalingInstancesAsync({})
     .then(function (data) {
-      console.log(JSON.stringify(data, null, 2));
       res.send(JSON.stringify(data));
     })
 });
